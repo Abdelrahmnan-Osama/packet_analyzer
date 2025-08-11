@@ -23,6 +23,7 @@ typedef enum
 #define PCAP_PROMISC 1                            // Enable promiscuous mode (all traffic)
 #define PCAP_TIMEOUT_MS 1000                      // Packet read timeout (milliseconds)
 #define PCAP_HDRS_ONLY 100                        // Ethernet+IP+Transport headers (no payload)
+#define FILTER_OPTIMIZE 0                         // 0 = no optimization, 1 = optimize filter
 
 /* Type aliases for network programming */
 typedef uint8_t u_char;   // 8-bit unsigned

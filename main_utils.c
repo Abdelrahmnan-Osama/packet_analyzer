@@ -97,7 +97,7 @@ pcap_t *open_capture(const program_options_t *opts)
     }
 
     // Apply filter if one was specified
-    if (opts->filter != "none" && strcmp(opts->filter, "") != 0)
+    if (strcmp(opts->filter, "none") && strcmp(opts->filter, "") != 0)
     {
         apply_filter(handle, opts->filter);
     }
@@ -139,7 +139,7 @@ static void apply_filter(pcap_t *handle, const char *filter_str)
     char errbuf[PCAP_ERRBUF_SIZE];
 
     // Compile the filter
-    if (pcap_compile(handle, &fp, filter_str, 0, PCAP_NETMASK_UNKNOWN) == -1)
+    if (pcap_compile(handle, &fp, filter_str, FILTER_OPTIMIZE, PCAP_NETMASK_UNKNOWN) == -1)
     {
         fprintf(stderr, "Couldn't parse filter %s: %s\n", filter_str, pcap_geterr(handle));
         pcap_close(handle);
