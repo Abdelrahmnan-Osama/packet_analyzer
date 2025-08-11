@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "stdio.h": "c",
-        "pcap.h": "c"
-    }
+        "pcap.h": "c",
+        "stdlib.h": "c",
+        "packet_parser.h": "c",
+        "resource.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }

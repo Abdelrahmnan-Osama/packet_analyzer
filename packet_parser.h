@@ -2,11 +2,10 @@
 #if !defined(PACKET_PARSER_H)
 #define PACKET_PARSER_H
 
-#include "constants.h"
 #include <stdio.h>
 #include <stdatomic.h>
-#include <pcap.h>
 #include <netinet/in.h>
+#include "constants.h"
 
 /* ==================================================================================================== */
 /*                                       STRUCTURE DEFINITIONS                                          */
@@ -54,8 +53,6 @@ typedef struct
 void init_packet_stats(packet_stats_t *stats);
 /* Process a packet and update stats */
 void process_packet(const u_char *packet, u_int packet_legth, packet_stats_t *stats); // signature modified
-/* Get protocol from packet */
-int get_packet_protocol(const u_char *packet, u_int packet_legth); // signature modified
 /* Print current statistics */
 void print_stats(const packet_stats_t *stats);
 
@@ -63,6 +60,8 @@ void print_stats(const packet_stats_t *stats);
 /*                                     HELPER FUNCTIONS DECLARATION                                     */
 /* ==================================================================================================== */
 
+/* Get protocol from packet */
+static int get_packet_protocol(const u_char *packet, u_int packet_legth); // signature modified
 /* Check packet is large enough */
 static int validate_packet_structure(const u_char *packet, u_int packet_length);
 /* Verify IPv4 Ethernet frame */

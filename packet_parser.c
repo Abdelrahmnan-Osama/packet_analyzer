@@ -40,7 +40,7 @@ void process_packet(const u_char *packet, u_int packet_length, packet_stats_t *s
     atomic_fetch_add(&stats->total_packets, 1); // Thread-safe total counter
 }
 
-int get_packet_protocol(const u_char *packet, u_int packet_length)
+static int get_packet_protocol(const u_char *packet, u_int packet_length)
 {
     /* 1. Basic Packet Sanity Checks */
     if (validate_packet_structure(packet, packet_length) != 0)
@@ -69,11 +69,12 @@ int get_packet_protocol(const u_char *packet, u_int packet_length)
 
 void print_stats(const packet_stats_t *stats)
 {
-    // calculate protocol type percentages
-    double tcp_pnt = (stats->total_packets != 0) ? ((double)stats->tcp_count / stats->total_packets) * 100 : 0;
-    double udp_pnt = (stats->total_packets != 0) ? ((double)stats->udp_count / stats->total_packets) * 100 : 0;
-    double icmp_pnt = (stats->total_packets != 0) ? ((double)stats->icmp_count / stats->total_packets) * 100 : 0;
-    double other_pnt = (stats->total_packets != 0) ? ((double)stats->other_count / stats->total_packets) * 100 : 0;
+    // calculate percentage of each protocol
+    double total = stats->total_packets;
+    double tcp_pnt = (total) ? (stats->tcp_count / total) * 100 : 0;
+    double udp_pnt = (total) ? (stats->udp_count / total) * 100 : 0;
+    double icmp_pnt = (total) ? (stats->icmp_count / total) * 100 : 0;
+    double other_pnt = (total) ? (stats->other_count / total) * 100 : 0;
 
     // print complete statistics
     printf("Packets captured: %d \n", stats->total_packets);
@@ -103,7 +104,7 @@ static int process_ethernet_header(const struct eth_header *eth)
     u_short eth_type = ntohs(eth->ether_type);
     if (eth_type != ETHERTYPE_IPV4)
     {
-        return PROTO_OTHER; // Not an IPv4 packet
+        return PROTO_OTHER; // non-IPv4 packet classified as other
     }
     return 0;
 }
