@@ -17,7 +17,8 @@ CC = gcc
 # -Wall          : Enable all standard warnings
 # -Wextra        : Enable extra warnings
 # -Werror        : Treat warnings as errors (optional)
-CFLAGS = -std=c11 -I. -Wall -Wextra -Werror
+# -g             : Include debug symbols for Valgrind
+CFLAGS = -std=c11 -I. -Wall -Wextra -Werror -g
 
 # Linker flags:
 # -lpcap    : Link with libpcap (packet capture library)
@@ -70,6 +71,10 @@ test: $(TEST_EXE)
 # Run with arguments (needs sudo for packet capture)
 run: $(MAIN_EXE)
 	sudo ./$(MAIN_EXE) $(ARGS)
+
+# Memory leak check with Valgrind
+memcheck: $(MAIN_EXE)
+	sudo valgrind --leak-check=full --show-leak-kinds=all ./$(MAIN_EXE) $(ARGS)
 
 ### PHONY TARGET DECLARATIONS ###
 # These targets don't represent actual files
