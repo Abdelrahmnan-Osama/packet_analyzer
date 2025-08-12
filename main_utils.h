@@ -1,6 +1,7 @@
 #if !defined(MAIN_UTILS_H)
 #define MAIN_UTILS_H
 
+#include "packet_parser.h" // Packet parsing definitions
 #include <stdlib.h>        // exit(), atoi(), malloc/free
 #include <string.h>        // strcmp()
 #include <pcap.h>          // Packet capture API (libpcap)
@@ -9,7 +10,6 @@
 #include <getopt.h>        // getopt()
 #include <unistd.h>        // sleep()
 #include <sys/resource.h>  // getrusage(), memory stats
-#include "packet_parser.h" // Packet parsing definitions
 
 /* ==================================================================================================== */
 /*                                       GLOBAL VARIABLE DECLARATIONS                                   */

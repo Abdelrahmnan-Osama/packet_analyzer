@@ -4,7 +4,12 @@
         "pcap.h": "c",
         "stdlib.h": "c",
         "packet_parser.h": "c",
-        "resource.h": "c"
+        "resource.h": "c",
+        "main_utils.h": "c",
+        "constants.h": "c",
+        "stdatomic.h": "c",
+        "string.h": "c",
+        "getopt.h": "c"
     },
     "C_Cpp.errorSquiggles": "enabledIfIncludesResolve"
 }
