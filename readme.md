@@ -9,18 +9,43 @@ A network packet capture tool for Ethernet networks that monitors live traffic a
 - libpcap library
 - GCC compiler with C11 support
 
-### Install Dependencies
-```bash
-# Ubuntu/Debian
-sudo apt-get install libpcap-dev build-essential
+## Build Process
 
-# CentOS/RHEL/Fedora  
-sudo yum install libpcap-devel gcc make
+### 1. Clone the Repository
+```bash
+git clone <repository_url>
+cd packet_analyzer
 ```
 
-## Building the Project
+### 2. Verify Project Files
+```bash
+ls -la
+# Expected files:
+# main.c main_utils.c packet_parser.c test_parser.c
+# main_utils.h packet_parser.h constants.h
+# Makefile
+```
 
-### Available Make Targets
+### 3. Install Dependencies
+```bash
+# Ubuntu/Debian
+sudo apt-get update
+sudo apt-get install libpcap-dev build-essential valgrind gdb net-tools
+
+# CentOS/RHEL/Fedora  
+sudo yum install libpcap-devel gcc make valgrind gdb net-tools
+# or for newer versions:
+sudo dnf install libpcap-devel gcc make valgrind gdb net-tools
+
+# Verify installations
+pkg-config --modversion libpcap
+gcc --version
+valgrind --version
+```
+
+### 4. Build with Make
+
+#### Available Make Targets
 ```bash
 # Build everything (recommended)
 make all
@@ -34,31 +59,15 @@ make test_parser
 # Build and run tests
 make test
 
+# Clean all generated files
+make clean
+
 # Run with custom arguments (requires sudo)
 make run ARGS="-i eth0 -t 30 -o stats.txt"
 
-# Memory leak detection with Valgrind
+# Memory leak detection with Valgrind (checks for memory issues)
 make memcheck ARGS="-i eth0 -t 5"
-
-# Clean all generated files
-make clean
 ```
-
-### Build Process
-1. **Clone/download** the project files
-2. **Install dependencies** using commands above
-3. **Build the project**:
-   ```bash
-   make all
-   ```
-4. **Run tests** to verify build:
-   ```bash
-   make test
-   ```
-5. **Test with actual interface**:
-   ```bash
-   make run ARGS="-i eth0 -t 5"
-   ```
 
 ## Usage
 
@@ -67,10 +76,11 @@ sudo ./packet_analyzer -i <ethernet_interface> [-f <filter>] [-t <seconds>] [-o 
 ```
 
 ### Options
-- `-i <interface>` - Ethernet interface (required, e.g., eth0, enp0s3)
+- `-i <interface>` - Ethernet interface (required, e.g., eth0, enp0s3, ens33)
 - `-f <filter>` - BPF filter expression (optional)
 - `-t <seconds>` - Capture duration (optional, 0=indefinite)
 - `-o <file>` - Output statistics file (optional, default=console)
+
 
 ### Examples
 ```bash
@@ -79,9 +89,11 @@ sudo ./packet_analyzer -i eth0 -t 30
 
 # Capture HTTP traffic to file
 sudo ./packet_analyzer -i eth0 -f "tcp port 80" -o web_stats.txt
+
+# Stop capture anytime with Ctrl+C
 ```
 
-## Build Troubleshooting
+## Troubleshooting
 
 ### Compilation Issues
 ```bash
@@ -98,14 +110,15 @@ gcc --version
 
 ### Runtime Issues
 ```bash
-# Permission denied - need root
+# Permission denied - need root privileges
 sudo ./packet_analyzer -i eth0
 
 # Interface not found - check available interfaces  
 ip link show
 
-# No Ethernet interface found
+# Unsupported link type - only Ethernet supported
 # Error: Unsupported link type (expected Ethernet)
+# Solution: Use Ethernet interface (eth0, enp0s3, etc.)
 ```
 
 ## Sample Output
