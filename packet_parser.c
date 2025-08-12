@@ -33,11 +33,15 @@ void process_packet(const u_char *packet, u_int packet_length, packet_stats_t *s
     case PROTO_OTHER:
         atomic_fetch_add(&stats->other_count, 1); // Other protocols
         break;
-        // Note: No default case as get_packet_protocol only returns defined values or -1
+    default:
+        break; // Malformed Packet
     }
 
     // Always increment total if packet is captured
-    atomic_fetch_add(&stats->total_packets, 1); // Thread-safe total counter
+    if (packet)
+    {
+        atomic_fetch_add(&stats->total_packets, 1); // Thread-safe total counter
+    }
 }
 
 static int get_packet_protocol(const u_char *packet, u_int packet_length)
