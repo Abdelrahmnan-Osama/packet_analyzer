@@ -112,9 +112,6 @@ static void print_final_stats(const packet_stats_t *stats, const char *filename)
         fclose(output);
         printf("Statistics saved to %s\n\n", filename);
     }
-
-    // Always print termination message to console
-    printf("Packet analyzer terminated.\n");
 }
 
 /* ==================================================================================================== */
@@ -197,8 +194,7 @@ pcap_t *open_capture(const program_options_t *opts)
     // Verify interface uses Ethernet framing
     if (pcap_datalink(handle) != DLT_EN10MB)
     {
-        fprintf(stderr, "%s: Unsupported link type (expected Ethernet)\n",
-                opts->device);
+        fprintf(stderr, "%s: Unsupported link type (expected Ethernet)\n", opts->device);
         pcap_close(handle);
         exit(EXIT_FAILURE);
     }
@@ -218,10 +214,17 @@ void run_capture_loop(pcap_t *handle, const program_options_t *opts)
     // Loop until interrupted or duration expires
     while (keep_running)
     {
+
+        // print stats every 5 seconds
+        if (opts->duration && (time(NULL) - start_time) >= 5)
+        {
+            print_final_stats(&stats, NULL);
+        }
         // If duration is set and elapsed time reached, exit loop
         if (opts->duration && (time(NULL) - start_time) >= opts->duration)
+        {
             break;
-
+        }
         // Capture and process up to 100 packets in one call
         pcap_dispatch(handle, BUFFER_SIZE, packet_handler, (u_char *)&stats);
     }
@@ -235,4 +238,7 @@ void cleanup_and_exit(pcap_t *handle, program_options_t *opts)
 
     // Output stats to file if specified, otherwise print to console
     print_final_stats(&stats, (strcmp(opts->outfile, "none") == 0) ? NULL : opts->outfile);
+
+    // Always print termination message to console
+    printf("Packet analyzer terminated.\n");
 }

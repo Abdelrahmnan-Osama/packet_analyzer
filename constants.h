@@ -21,7 +21,7 @@ typedef enum
 #define IP_IHL_BITS 4                             // Bit-width for IP header length field (4 bits)
 #define BUFFER_SIZE 1000                          // Network capture buffer size (100 bytes)
 #define PCAP_PROMISC 1                            // Enable promiscuous mode (all traffic)
-#define PCAP_TIMEOUT_MS 1000                      // Packet read timeout (milliseconds)
+#define PCAP_TIMEOUT_MS 100                       // Packet read timeout (milliseconds)
 #define PCAP_HDRS_ONLY 100                        // Ethernet+IP+Transport headers (no payload)
 #define FILTER_OPTIMIZE 0                         // 0 = no optimization, 1 = optimize filter
 
