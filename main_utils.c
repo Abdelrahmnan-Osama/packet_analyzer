@@ -187,8 +187,7 @@ pcap_t *open_capture(const program_options_t *opts)
     char errbuf[PCAP_ERRBUF_SIZE]; // PCAP error buffer
 
     // Open network interface in promiscuous mode
-    handle = pcap_open_live(opts->device, PCAP_HDRS_ONLY, PCAP_PROMISC,
-                            PCAP_TIMEOUT_MS, errbuf);
+    handle = pcap_open_live(opts->device, PCAP_HDRS_ONLY, PCAP_PROMISC, PCAP_TIMEOUT_MS, errbuf);
     if (!handle) // Validate capture handle
     {
         fprintf(stderr, "Error opening interface: %s\n", errbuf);
@@ -225,9 +224,6 @@ void run_capture_loop(pcap_t *handle, const program_options_t *opts)
 
         // Capture and process up to 100 packets in one call
         pcap_dispatch(handle, BUFFER_SIZE, packet_handler, (u_char *)&stats);
-
-        // Sleep briefly to reduce CPU usage and allow interrupts
-        sleep(1);
     }
 }
 

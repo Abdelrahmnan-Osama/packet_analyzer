@@ -8,7 +8,6 @@
 #include <signal.h>        // Signals (SIGINT, sig_atomic_t)
 #include <time.h>          // time(), time calculations
 #include <getopt.h>        // getopt()
-#include <unistd.h>        // sleep()
 #include <sys/resource.h>  // getrusage(), memory stats
 
 /* ==================================================================================================== */
