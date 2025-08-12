@@ -45,7 +45,7 @@ pcap_t *open_capture(const program_options_t *opts);
 // Runs the main packet capture loop until time limit or interrupt is reached
 void run_capture_loop(pcap_t *handle, const program_options_t *opts);
 // Closes the capture handle and prints final statistics before exiting
-void cleanup_and_exit(pcap_t *handle);
+void cleanup_and_exit(pcap_t *handle, program_options_t *opts);
 
 /* ==================================================================================================== */
 /*                                       HELPER FUNCTIONS DECLARATION                                   */
@@ -59,8 +59,8 @@ static void handle_interrupt(int signal);
 static void packet_handler(u_char *user_data, const struct pcap_pkthdr *h, const u_char *packet);
 /* Prints startup info (interface, buffer, filter, etc.) */
 static void print_banner(const char *device, const char *filter, int duration, const char *outfile);
-/* Prints final statistics after capture ends */
-static void print_final_stats(const packet_stats_t *stats);
+/* Output statistics to console or file after capture ends */
+static void print_final_stats(const packet_stats_t *stats, const char *filename);
 /* Returns peak memory usage in KB */
 static size_t get_memory_usage(void);
 

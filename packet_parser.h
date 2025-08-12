@@ -54,7 +54,7 @@ void init_packet_stats(packet_stats_t *stats);
 /* Process a packet and update stats */
 void process_packet(const u_char *packet, u_int packet_legth, packet_stats_t *stats); // signature modified
 /* Print current statistics */
-void print_stats(const packet_stats_t *stats);
+void print_stats(const packet_stats_t *stats, FILE *out);
 
 /* ==================================================================================================== */
 /*                                     HELPER FUNCTIONS DECLARATION                                     */

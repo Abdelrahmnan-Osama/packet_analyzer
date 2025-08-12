@@ -123,10 +123,14 @@ void run_capture_loop(pcap_t *handle, const program_options_t *opts)
     }
 }
 
-void cleanup_and_exit(pcap_t *handle)
+// Close capture handle and output statistics
+void cleanup_and_exit(pcap_t *handle, program_options_t *opts)
 {
+    // Close the packet capture handle
     pcap_close(handle);
-    print_final_stats(&stats);
+
+    // Output stats to file if specified, otherwise print to console
+    print_final_stats(&stats, (strcmp(opts->outfile, "none") == 0) ? NULL : opts->outfile);
 }
 
 /* ==================================================================================================== */
@@ -189,17 +193,40 @@ static void print_banner(const char *device, const char *filter, int duration, c
     printf("Output File: %s \n \n", outfile);
 }
 
-/* Prints final stats (elapsed time, counts, memory usage) */
-static void print_final_stats(const packet_stats_t *stats)
+// Output statistics to console or file
+static void print_final_stats(const packet_stats_t *stats, const char *filename)
 {
-    int elapsed = (int)(time(NULL) - start_time); // Calculate runtime
-    printf("Final Statistics: \n");               // Header
-    printf("[%d seconds elapsed] \n", elapsed);   // Show duration
+    // Open file if filename provided, otherwise use console
+    FILE *output = filename ? fopen(filename, "w") : stdout;
+    if (!output)
+    {
+        perror("Failed to open output file");
+        return;
+    }
 
-    print_stats(stats); // Print packet counters
+    // Calculate program runtime
+    int elapsed = (int)(time(NULL) - start_time);
 
-    printf("Memory usage: %.1f KB\n \n", get_memory_usage() / 1024.0); // RAM used
-    printf("Packet analyzer terminated.\n");                           // Closing message
+    // Print statistics header
+    fprintf(output, "Final Statistics:\n");
+    fprintf(output, "================\n");
+    fprintf(output, "[%d seconds elapsed]\n", elapsed);
+
+    // Print packet counts and percentages
+    print_stats(stats, output);
+
+    // Print memory usage
+    fprintf(output, "Memory usage: %.1f KB\n\n", get_memory_usage() / 1024.0);
+
+    // Close file if we wrote to one
+    if (filename)
+    {
+        fclose(output);
+        printf("Statistics saved to %s\n\n", filename);
+    }
+
+    // Always print termination message to console
+    printf("Packet analyzer terminated.\n");
 }
 /* Returns peak memory usage (KB) for current process */
 static size_t get_memory_usage(void)

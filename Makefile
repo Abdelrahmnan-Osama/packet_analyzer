@@ -58,7 +58,7 @@ $(TEST_EXE): $(TEST_SRC) packet_parser.c $(HEADERS)
 
 # Clean target - removes generated files
 clean:
-	rm -f $(MAIN_EXE) $(TEST_EXE) *.o
+	rm -f $(MAIN_EXE) $(TEST_EXE) *.o *.txt *.log *.out
 
 # Test target - builds and runs the test suite
 test: $(TEST_EXE)

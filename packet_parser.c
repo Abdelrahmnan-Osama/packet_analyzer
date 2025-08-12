@@ -71,22 +71,25 @@ static int get_packet_protocol(const u_char *packet, u_int packet_length)
     return identify_transport_protocol(ip->protocol);
 }
 
-void print_stats(const packet_stats_t *stats)
+void print_stats(const packet_stats_t *stats, FILE *out)
 {
-    // calculate percentage of each protocol
-    double total = stats->total_packets;
-    double tcp_pnt = (total) ? (stats->tcp_count / total) * 100 : 0;
-    double udp_pnt = (total) ? (stats->udp_count / total) * 100 : 0;
-    double icmp_pnt = (total) ? (stats->icmp_count / total) * 100 : 0;
-    double other_pnt = (total) ? (stats->other_count / total) * 100 : 0;
+    if (!out) {
+        out = stdout; // default to console
+    }
 
-    // print complete statistics
-    printf("Packets captured: %d \n", stats->total_packets);
-    printf("TCP:   %d (%.1f%%) \n", stats->tcp_count, tcp_pnt);
-    printf("UDP:   %d (%.1f%%) \n", stats->udp_count, udp_pnt);
-    printf("ICMP:  %d (%.1f%%) \n", stats->icmp_count, icmp_pnt);
-    printf("Other: %d (%.1f%%) \n", stats->other_count, other_pnt);
+    double total = stats->total_packets;
+    double tcp_pnt   = total ? (stats->tcp_count / total) * 100 : 0;
+    double udp_pnt   = total ? (stats->udp_count / total) * 100 : 0;
+    double icmp_pnt  = total ? (stats->icmp_count / total) * 100 : 0;
+    double other_pnt = total ? (stats->other_count / total) * 100 : 0;
+
+    fprintf(out, "Packets captured: %d\n", stats->total_packets);
+    fprintf(out, "TCP:   %d (%.1f%%)\n", stats->tcp_count, tcp_pnt);
+    fprintf(out, "UDP:   %d (%.1f%%)\n", stats->udp_count, udp_pnt);
+    fprintf(out, "ICMP:  %d (%.1f%%)\n", stats->icmp_count, icmp_pnt);
+    fprintf(out, "Other: %d (%.1f%%)\n", stats->other_count, other_pnt);
 }
+
 
 /* ==================================================================================================== */
 /*                                     HELPER FUNCTIONS IMPLEMENTATION                                  */
