@@ -19,7 +19,7 @@ typedef enum
 #define ETHERTYPE_IPV4 0x0800                     //  Internet Protocol version 4
 #define IP_VERSION_BITS 4                         // Bit-width for IP version field (4 bits)
 #define IP_IHL_BITS 4                             // Bit-width for IP header length field (4 bits)
-#define BUFFER_SIZE 100                           // Network capture buffer size (100 bytes)
+#define BUFFER_SIZE 1000                          // Network capture buffer size (100 bytes)
 #define PCAP_PROMISC 1                            // Enable promiscuous mode (all traffic)
 #define PCAP_TIMEOUT_MS 1000                      // Packet read timeout (milliseconds)
 #define PCAP_HDRS_ONLY 100                        // Ethernet+IP+Transport headers (no payload)
