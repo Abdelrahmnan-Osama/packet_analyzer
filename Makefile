@@ -12,9 +12,12 @@
 CC = gcc
 
 # Compiler flags:
-# -std=c11  : Use the C11 language standard
-# -I.       : Include the current directory in header search path
-CFLAGS = -std=c11 -I.
+# -std=c11       : Use the C11 language standard
+# -I.            : Include current directory in header search path
+# -Wall          : Enable all standard warnings
+# -Wextra        : Enable extra warnings
+# -Werror        : Treat warnings as errors (optional)
+CFLAGS = -std=c11 -I. -Wall -Wextra -Werror
 
 # Linker flags:
 # -lpcap    : Link with libpcap (packet capture library)
@@ -73,14 +76,12 @@ run: $(MAIN_EXE)
 
 .PHONY: all clean test
 
-
 #######################################################################
 #                       USAGE INSTRUCTIONS                            #
 #                                                                     #
-# make                   : Build both main and test executables       #
-# make packet_analyzer   : Build only the main program                #
-# make test              : Build only the test suite                  #
-# make test              : Build and run the test suite               #
-# make run               : Build and run main program (use ARGS=...)  #
-# make clean             : Remove all build artifacts                 #
+# make all              : Build both main and test executables        #
+# make packet_analyzer  : Build only the main program                 #
+# make test             : Build and run tests                         #
+# make run ARGS="..."   : Run with args (e.g., -i eth0 -o stats.txt)  #
+# make clean            : Clean all build/output files                #
 #######################################################################
