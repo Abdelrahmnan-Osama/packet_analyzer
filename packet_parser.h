@@ -56,19 +56,4 @@ void process_packet(const u_char *packet, u_int packet_legth, packet_stats_t *st
 /* Print current statistics */
 void print_stats(const packet_stats_t *stats, FILE *out);
 
-/* ==================================================================================================== */
-/*                                     HELPER FUNCTIONS DECLARATION                                     */
-/* ==================================================================================================== */
-
-/* Get protocol from packet */
-static int get_packet_protocol(const u_char *packet, u_int packet_legth); // signature modified
-/* Check packet is large enough */
-static int validate_packet_structure(const u_char *packet, u_int packet_length);
-/* Verify IPv4 Ethernet frame */
-static int process_ethernet_header(const struct eth_header *eth);
-/* Validate IP header fields */
-static int validate_ip_header(const struct ip_header *ip, u_int packet_length);
-/* Get protocol type from IP header */
-static int identify_transport_protocol(u_char ip_protocol);
-
 #endif /* PACKET_PARSER_H */

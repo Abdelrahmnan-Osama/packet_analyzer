@@ -1,97 +1,6 @@
 #include "packet_parser.h"
 
 /* ==================================================================================================== */
-/*                                     PUBLIC FUNCTIONS IMPLEMENTATION                                  */
-/* ==================================================================================================== */
-
-void init_packet_stats(packet_stats_t *stats)
-{
-    atomic_init(&stats->tcp_count, 0);
-    atomic_init(&stats->udp_count, 0);
-    atomic_init(&stats->icmp_count, 0);
-    atomic_init(&stats->other_count, 0);
-    atomic_init(&stats->total_packets, 0);
-}
-
-void process_packet(const u_char *packet, u_int packet_length, packet_stats_t *stats)
-{
-    // Get packet protocol type (TCP/UDP/ICMP/OTHER or -1 for errors)
-    int proto = get_packet_protocol(packet, packet_length);
-
-    // Update protocol-specific counter based on packet type
-    switch (proto)
-    {
-    case PROTO_TCP:
-        atomic_fetch_add(&stats->tcp_count, 1); // Thread-safe TCP counter
-        break;
-    case PROTO_UDP:
-        atomic_fetch_add(&stats->udp_count, 1); // Thread-safe UDP counter
-        break;
-    case PROTO_ICMP:
-        atomic_fetch_add(&stats->icmp_count, 1); // Thread-safe ICMP counter
-        break;
-    case PROTO_OTHER:
-        atomic_fetch_add(&stats->other_count, 1); // Other protocols
-        break;
-    default:
-        break; // Malformed Packet
-    }
-
-    // Always increment total if packet is captured
-    if (packet)
-    {
-        atomic_fetch_add(&stats->total_packets, 1); // Thread-safe total counter
-    }
-}
-
-static int get_packet_protocol(const u_char *packet, u_int packet_length)
-{
-    /* 1. Basic Packet Sanity Checks */
-    if (validate_packet_structure(packet, packet_length) != 0)
-    {
-        return -1;
-    }
-
-    /* 2. Ethernet Header Processing */
-    const struct eth_header *eth = (const struct eth_header *)packet;
-    int ethernet_type = process_ethernet_header(eth);
-    if (ethernet_type != 0)
-    {
-        return ethernet_type;
-    }
-
-    /* 3. IPv4 Header Processing */
-    const struct ip_header *ip = (const struct ip_header *)(packet + ETH_HEADER_SIZE);
-    if (validate_ip_header(ip, packet_length) != 0)
-    {
-        return -1;
-    }
-
-    /* 4. Protocol Identification */
-    return identify_transport_protocol(ip->protocol);
-}
-
-void print_stats(const packet_stats_t *stats, FILE *out)
-{
-    if (!out) {
-        out = stdout; // default to console
-    }
-
-    double total = stats->total_packets;
-    double tcp_pnt   = total ? (stats->tcp_count / total) * 100 : 0;
-    double udp_pnt   = total ? (stats->udp_count / total) * 100 : 0;
-    double icmp_pnt  = total ? (stats->icmp_count / total) * 100 : 0;
-    double other_pnt = total ? (stats->other_count / total) * 100 : 0;
-
-    fprintf(out, "Packets captured: %d\n", stats->total_packets);
-    fprintf(out, "TCP:   %d (%.1f%%)\n", stats->tcp_count, tcp_pnt);
-    fprintf(out, "UDP:   %d (%.1f%%)\n", stats->udp_count, udp_pnt);
-    fprintf(out, "ICMP:  %d (%.1f%%)\n", stats->icmp_count, icmp_pnt);
-    fprintf(out, "Other: %d (%.1f%%)\n", stats->other_count, other_pnt);
-}
-
-
-/* ==================================================================================================== */
 /*                                     HELPER FUNCTIONS IMPLEMENTATION                                  */
 /* ==================================================================================================== */
 
@@ -146,4 +55,95 @@ static int identify_transport_protocol(u_char ip_protocol)
     default:
         return PROTO_OTHER;
     }
+}
+
+static int get_packet_protocol(const u_char *packet, u_int packet_length)
+{
+    /* 1. Basic Packet Sanity Checks */
+    if (validate_packet_structure(packet, packet_length) != 0)
+    {
+        return -1;
+    }
+
+    /* 2. Ethernet Header Processing */
+    const struct eth_header *eth = (const struct eth_header *)packet;
+    int ethernet_type = process_ethernet_header(eth);
+    if (ethernet_type != 0)
+    {
+        return ethernet_type;
+    }
+
+    /* 3. IPv4 Header Processing */
+    const struct ip_header *ip = (const struct ip_header *)(packet + ETH_HEADER_SIZE);
+    if (validate_ip_header(ip, packet_length) != 0)
+    {
+        return -1;
+    }
+
+    /* 4. Protocol Identification */
+    return identify_transport_protocol(ip->protocol);
+}
+
+/* ==================================================================================================== */
+/*                                     PUBLIC FUNCTIONS IMPLEMENTATION                                  */
+/* ==================================================================================================== */
+
+void init_packet_stats(packet_stats_t *stats)
+{
+    atomic_init(&stats->tcp_count, 0);
+    atomic_init(&stats->udp_count, 0);
+    atomic_init(&stats->icmp_count, 0);
+    atomic_init(&stats->other_count, 0);
+    atomic_init(&stats->total_packets, 0);
+}
+
+void process_packet(const u_char *packet, u_int packet_length, packet_stats_t *stats)
+{
+    // Get packet protocol type (TCP/UDP/ICMP/OTHER or -1 for errors)
+    int proto = get_packet_protocol(packet, packet_length);
+
+    // Update protocol-specific counter based on packet type
+    switch (proto)
+    {
+    case PROTO_TCP:
+        atomic_fetch_add(&stats->tcp_count, 1); // Thread-safe TCP counter
+        break;
+    case PROTO_UDP:
+        atomic_fetch_add(&stats->udp_count, 1); // Thread-safe UDP counter
+        break;
+    case PROTO_ICMP:
+        atomic_fetch_add(&stats->icmp_count, 1); // Thread-safe ICMP counter
+        break;
+    case PROTO_OTHER:
+        atomic_fetch_add(&stats->other_count, 1); // Other protocols
+        break;
+    default:
+        break; // Malformed Packet
+    }
+
+    // Always increment total if packet is captured
+    if (packet)
+    {
+        atomic_fetch_add(&stats->total_packets, 1); // Thread-safe total counter
+    }
+}
+
+void print_stats(const packet_stats_t *stats, FILE *out)
+{
+    if (!out)
+    {
+        out = stdout; // default to console
+    }
+
+    double total = stats->total_packets;
+    double tcp_pnt = total ? (stats->tcp_count / total) * 100 : 0;
+    double udp_pnt = total ? (stats->udp_count / total) * 100 : 0;
+    double icmp_pnt = total ? (stats->icmp_count / total) * 100 : 0;
+    double other_pnt = total ? (stats->other_count / total) * 100 : 0;
+
+    fprintf(out, "Packets captured: %d\n", stats->total_packets);
+    fprintf(out, "TCP:   %d (%.1f%%)\n", stats->tcp_count, tcp_pnt);
+    fprintf(out, "UDP:   %d (%.1f%%)\n", stats->udp_count, udp_pnt);
+    fprintf(out, "ICMP:  %d (%.1f%%)\n", stats->icmp_count, icmp_pnt);
+    fprintf(out, "Other: %d (%.1f%%)\n", stats->other_count, other_pnt);
 }
