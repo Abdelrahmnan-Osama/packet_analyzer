@@ -24,6 +24,7 @@ typedef enum
 #define PCAP_TIMEOUT_MS 100                       // Packet read timeout (milliseconds)
 #define PCAP_HDRS_ONLY 100                        // Ethernet+IP+Transport headers (no payload)
 #define FILTER_OPTIMIZE 0                         // 0 = no optimization, 1 = optimize filter
+#define STATS_PRINT_DURATION 5                    // print stats every 5 seconds
 
 /* Type aliases for network programming */
 typedef uint8_t u_char;   // 8-bit unsigned

@@ -216,7 +216,7 @@ void run_capture_loop(pcap_t *handle, const program_options_t *opts)
     {
 
         // print stats every 5 seconds
-        if (opts->duration && (time(NULL) - start_time) >= 5)
+        if (opts->duration && (time(NULL) - start_time) >= STATS_PRINT_DURATION)
         {
             print_final_stats(&stats, NULL);
         }
