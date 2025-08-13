@@ -13,6 +13,8 @@ time_t start_time;                      // Program start timestamp
 
 static pcap_t *handle = NULL; // Private capture handle
 
+static volatile sig_atomic_t interrupted = 0; // Global flag to track SIGINT (Ctrl+C)
+
 /* ==================================================================================================== */
 /*                                     HELPER FUNCTIONS IMPLEMENTATION                                  */
 /* ==================================================================================================== */
@@ -47,6 +49,7 @@ static void handle_interrupt(int signal)
 {
     printf("\nReceived signal %d, shutting down...\n \n", signal);
     keep_running = 0;
+    interrupted = 1;
     if (handle)
     {
         pcap_breakloop(handle); // Immediately break from pcap_dispatch/pcap_loop
@@ -218,7 +221,8 @@ void run_capture_loop(pcap_t *handle, const program_options_t *opts)
         // print stats every 5 seconds
         if (opts->duration && (time(NULL) - start_time) >= STATS_PRINT_DURATION)
         {
-            print_final_stats(&stats, NULL);
+            // Output stats to file if specified, otherwise print to console
+            print_final_stats(&stats, (strcmp(opts->outfile, "none") == 0) ? NULL : opts->outfile);
         }
         // If duration is set and elapsed time reached, exit loop
         if (opts->duration && (time(NULL) - start_time) >= opts->duration)
@@ -236,8 +240,11 @@ void cleanup_and_exit(pcap_t *handle, program_options_t *opts)
     // Close the packet capture handle
     pcap_close(handle);
 
-    // Output stats to file if specified, otherwise print to console
-    print_final_stats(&stats, (strcmp(opts->outfile, "none") == 0) ? NULL : opts->outfile);
+    if (interrupted)
+    {
+        // Output stats to file if specified, otherwise print to console
+        print_final_stats(&stats, (strcmp(opts->outfile, "none") == 0) ? NULL : opts->outfile);
+    }
 
     // Always print termination message to console
     printf("Packet analyzer terminated.\n");
